@@ -22,13 +22,6 @@
 
     --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
     --font-data: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
-
-    --rule-gap: linear-gradient(
-      to right,
-      #000 0 calc(50% - 105px),
-      transparent calc(50% - 105px) calc(50% + 105px),
-      #000 calc(50% + 105px) 100%
-    );
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -45,22 +38,26 @@
 
   body {
     display: flex;
-    gap: 18px;
+    flex-direction: column;
+    gap: 14px;
     height: 100vh;
-    padding: 18px;
+    padding: 16px;
   }
 
-  /* ------------------------------------------------ left: clock + status */
-
-  .now {
-    flex: 0 0 clamp(290px, 22%, 400px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  .card {
     background: var(--panel);
     border: 1px solid var(--hair);
     border-radius: 4px;
-    padding: clamp(20px, 3vh, 38px);
+  }
+
+  /* ------------------------------------------------------------ header */
+
+  .head {
+    display: flex;
+    align-items: center;
+    gap: clamp(18px, 2.6vw, 48px);
+    padding: clamp(14px, 2vh, 22px) clamp(18px, 1.8vw, 30px);
+    flex: none;
   }
 
   .clock {
@@ -68,45 +65,41 @@
     align-items: baseline;
     font-weight: 700;
     letter-spacing: -0.035em;
-    line-height: 0.88;
+    line-height: 0.9;
   }
-  .clock-hm { font-size: clamp(54px, 7.6vw, 104px); }
+  .clock-hm  { font-size: clamp(36px, 4.2vw, 66px); }
   .clock-sec {
     font-family: var(--font-data);
-    font-size: clamp(15px, 1.5vw, 21px);
-    font-weight: 400;
+    font-size: clamp(12px, 1.05vw, 18px);
     color: var(--muted);
+    margin-left: 0.08em;
   }
   .clock-mer {
-    font-size: clamp(19px, 2vw, 28px);
+    font-size: clamp(15px, 1.4vw, 22px);
     font-weight: 600;
-    color: var(--ink);
-    margin-left: 0.1em;
+    margin-left: 0.42em;
   }
 
-  .today {
-    margin-top: 14px;
-    font-size: clamp(14px, 1.2vw, 18px);
+  .head-date {
+    font-size: clamp(12px, 1vw, 16px);
     font-weight: 500;
     color: var(--muted);
+    padding-bottom: 0.4em;
+    align-self: flex-end;
   }
 
-  .now-rule {
-    height: 1px;
-    background: var(--hair);
-    margin: clamp(24px, 4.5vh, 46px) 0 clamp(20px, 3.5vh, 34px);
-  }
+  .head-spacer { flex: 1; }
 
-  .state {
+  .status { text-align: right; }
+  .status-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: flex-end;
+    gap: 10px;
   }
   .lamp {
-    width: 13px;
-    height: 13px;
+    width: 12px; height: 12px;
     border-radius: 50%;
-    flex: none;
     background: var(--off);
     box-shadow: 0 0 0 4px var(--off-tint);
   }
@@ -114,215 +107,207 @@
     background: var(--on);
     box-shadow: 0 0 0 4px var(--on-tint);
   }
-  .state-label {
-    font-size: clamp(22px, 2.4vw, 32px);
+  .status-label {
+    font-size: clamp(17px, 1.8vw, 26px);
     font-weight: 700;
     letter-spacing: -0.02em;
   }
-
-  .flip {
-    margin-top: 12px;
-    font-size: clamp(13px, 1.15vw, 17px);
-    line-height: 1.45;
+  .status-sub {
+    margin-top: 4px;
+    font-size: clamp(11.5px, 0.95vw, 14.5px);
     color: var(--muted);
   }
-  .flip-lead strong {
-    font-weight: 600;
-    color: var(--ink);
-    font-variant-numeric: tabular-nums;
-  }
-  .flip-when {
-    margin-top: 2px;
-    font-family: var(--font-data);
-    font-size: clamp(11.5px, 0.95vw, 14px);
-  }
+  .status-sub strong { color: var(--ink); font-weight: 600; }
 
-  .shift {
-    margin-top: clamp(18px, 3vh, 30px);
+  /* --------------------------------------------------------- timelines */
+
+  .track-card {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(12px, 1.7vh, 20px) clamp(18px, 1.8vw, 30px) clamp(10px, 1.4vh, 16px);
+    min-height: 0;
   }
-  .shift-track {
+  .track-24 { flex: 1; }
+
+  /* slim 7-day footer strip */
+  .strip {
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 1.5vw, 26px);
+    flex: none;
+    padding: 10px clamp(18px, 1.8vw, 30px) 11px;
+  }
+  .strip-name {
+    font-size: clamp(11px, 0.85vw, 13px);
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .strip-body { flex: 1; min-width: 0; }
+  .strip-band {
     position: relative;
-    height: 7px;
-    border-radius: 999px;
-    background: var(--off-tint);
+    height: 22px;
+    border: 1px solid var(--hair);
+    border-radius: 2px;
     overflow: hidden;
   }
-  .shift-fill {
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 0;
-    background: var(--on);
-    border-radius: 999px;
+  .strip-axis {
+    position: relative;
+    height: 15px;
+    margin-top: 3px;
   }
-  .shift-ends {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
-    font-family: var(--font-data);
+  .strip-note {
     font-size: clamp(11px, 0.85vw, 13px);
     color: var(--muted);
+    white-space: nowrap;
   }
 
-  .week {
-    margin-top: clamp(26px, 4.5vh, 44px);
-    padding-top: clamp(18px, 3vh, 28px);
-    border-top: 1px solid var(--hair);
+  .track-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex: none;
+    margin-bottom: 8px;
   }
-  .week-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-  }
-  .day {
-    border-radius: 3px;
-    padding: 7px 0 8px;
-    text-align: center;
-    background: var(--off-tint);
-    background-image: repeating-linear-gradient(
-      -45deg,
-      rgba(71, 86, 107, 0.13) 0 1px,
-      transparent 1px 6px
-    );
-  }
-  .day.open {
-    background: var(--on-tint);
-    background-image: none;
-  }
-  .day.today { box-shadow: inset 0 0 0 1.5px var(--ink); }
-  .day-dow {
-    font-family: var(--font-data);
-    font-size: clamp(9.5px, 0.72vw, 11px);
-    color: var(--muted);
-  }
-  .day-num {
-    margin-top: 2px;
-    font-family: var(--font-data);
-    font-size: clamp(12px, 0.95vw, 14.5px);
+  .track-name {
+    font-size: clamp(12px, 1vw, 15px);
     font-weight: 600;
-    color: var(--off);
   }
-  .day.open .day-num { color: var(--on); }
-  .week-note {
-    margin-top: 10px;
-    font-size: clamp(11.5px, 0.92vw, 13.5px);
+  .track-note {
+    font-size: clamp(11px, 0.88vw, 13.5px);
     color: var(--muted);
   }
 
-  /* --------------------------------------------- right: 24-hour scale */
+  .rail { position: relative; height: 24px; flex: none; }
+  .tag {
+    position: absolute;
+    bottom: 1px;
+    transform: translateX(-50%);
+    width: max-content;
+    padding: 3px 9px;
+    border-radius: 3px;
+    font-family: var(--font-data);
+    font-size: clamp(10px, 0.76vw, 12.5px);
+    font-weight: 600;
+    color: var(--panel);
+  }
+  .tag.on  { background: var(--on); }
+  .tag.off { background: var(--off); }
+  .tag.day { background: var(--ink); }
 
-  .run {
-    flex: 1;
+  .band {
     position: relative;
-    background: var(--panel);
+    flex: 1;
+    min-height: 0;
     border: 1px solid var(--hair);
-    border-radius: 4px;
+    border-radius: 3px;
     overflow: hidden;
   }
-
   .layer { position: absolute; inset: 0; }
-  .bands, .edges { pointer-events: none; }
-
-  .band { position: absolute; left: 0; right: 0; }
-  .band.on { background: var(--on-tint); }
-  .band.off {
+  .seg { position: absolute; top: 0; bottom: 0; }
+  .seg.on { background: var(--on-tint); }
+  .seg.off {
     background:
-      repeating-linear-gradient(
-        -45deg,
-        rgba(71, 86, 107, 0.11) 0 1px,
-        transparent 1px 7px
-      ),
+      repeating-linear-gradient(-45deg, rgba(71,86,107,0.11) 0 1px, transparent 1px 7px),
       var(--off-tint);
   }
 
-  .ticks {
-    display: grid;
-    grid-template-rows: repeat(24, 1fr);
+  .gridline {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: rgba(23,33,29,0.08);
+  }
+  .gridline.quarter { background: rgba(23,33,29,0.18); }
+
+  .rule {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 0;
+    border-left: 1px solid currentColor;
+  }
+  .rule.on  { color: var(--on); }
+  .rule.off { color: var(--off); }
+  .rule.day { color: var(--ink); border-left-style: dashed; }
+
+  .nowmark {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--ink);
   }
 
-  .tick {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    border-top: 1px solid rgba(23, 33, 29, 0.07);
-    transition: background-color 140ms ease;
-  }
-  .tick:first-child { border-top: 0; }
-  .tick.quarter { border-top-color: rgba(23, 33, 29, 0.2); }
+  .cells { position: absolute; inset: 0; display: grid; }
+  .cell { transition: background-color 130ms ease; }
+  .cell:hover { background: rgba(23,33,29,0.07); }
 
-  .tick-offset {
-    min-width: 5.2em;
-    text-align: right;
+  /* ------------------------------------------------------------- axes */
+
+  .axis { position: relative; flex: none; }
+  .axis-24 { height: clamp(46px, 6.4vh, 58px); margin-top: 8px; }
+  .axis-7  { height: clamp(36px, 5vh, 46px); margin-top: 8px; }
+
+  .ax {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .ax-n {
     font-family: var(--font-data);
-    font-size: clamp(11px, 1.45vh, 15px);
+    font-size: clamp(14px, 1.32vw, 22px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .ax-t {
+    margin-top: 1px;
+    font-family: var(--font-data);
+    font-size: clamp(10px, 0.82vw, 13px);
     font-weight: 500;
+    color: var(--off);
+  }
+  .ax.open .ax-t { color: var(--on); }
+  .ax-m {
+    font-family: var(--font-data);
+    font-size: clamp(8.5px, 0.62vw, 10px);
     color: var(--muted);
   }
-  .tick-time {
-    min-width: 5.6em;
-    text-align: left;
+  .ax.lit .ax-n { color: var(--on); }
+  .ax.lit .ax-t { font-weight: 700; }
+  .ax.edge-first { transform: translateX(0); text-align: left; }
+  .ax.edge-last  { transform: translateX(-100%); text-align: right; }
+  .ax-now .ax-n { color: var(--ink); font-weight: 700; }
+
+  /* day axis */
+  .dx {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .dx-d {
     font-family: var(--font-data);
-    font-size: clamp(13px, 1.85vh, 19px);
+    font-size: clamp(9.5px, 0.72vw, 11.5px);
     font-weight: 600;
     color: var(--off);
   }
-  .tick.on .tick-time { color: var(--on); }
+  .dx.open .dx-d { color: var(--on); }
+  .dx.lit .dx-d { color: var(--ink); }
+  .dx.edge-first { transform: translateX(0); text-align: left; }
+  .dx.edge-last  { transform: translateX(-100%); text-align: right; }
 
-  .tick:hover { background: rgba(23, 33, 29, 0.055); }
-  .tick:hover .tick-offset { color: var(--ink); }
-
-  /* boundary + day-break rules */
-
-  .edge { position: absolute; left: 0; right: 0; height: 0; }
-  .edge::before {
-    content: "";
-    position: absolute;
-    left: 0; right: 0; top: 0;
-    border-top: 1px solid currentColor;
-    /* open a gap so the rule never strikes through the centred readout */
-    -webkit-mask-image: var(--rule-gap);
-    mask-image: var(--rule-gap);
+  @media (max-width: 1320px) {
+    .ax[data-skip2="1"] { display: none; }
   }
-  .edge-tag {
-    position: absolute;
-    top: 0;
-    transform: translateY(-50%);
-    padding: 3px 9px;
-    border-radius: 3px;
-    background: currentColor;
-    font-family: var(--font-data);
-    font-size: clamp(10px, 1.15vh, 12.5px);
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  .edge-tag span { color: var(--panel); }
-
-  .edge.to-on    { color: var(--on); }
-  .edge.to-off   { color: var(--off); }
-  .edge.to-on .edge-tag,
-  .edge.to-off .edge-tag { right: 22px; }
-
-  .edge.midnight { color: var(--ink); }
-  .edge.midnight::before { border-top-style: dashed; }
-  .edge.midnight .edge-tag { left: 22px; background: var(--ink); }
-
-  @media (max-width: 760px) {
-    body { flex-direction: column; gap: 12px; padding: 12px; }
-    .now { flex: 0 0 auto; padding: 18px; }
-    .now-rule { margin: 18px 0 16px; }
-    .week { margin-top: 20px; padding-top: 16px; }
-    .run { min-height: 0; }
-    :root {
-      --rule-gap: linear-gradient(
-        to right,
-        #000 0 calc(50% - 82px),
-        transparent calc(50% - 82px) calc(50% + 82px),
-        #000 calc(50% + 82px) 100%
-      );
-    }
-    .edge.to-on .edge-tag, .edge.to-off .edge-tag { right: 10px; }
-    .edge.midnight .edge-tag { left: 10px; }
+  @media (max-width: 900px) {
+    .ax[data-skip3="1"] { display: none; }
+    .head { flex-wrap: wrap; gap: 14px; }
+    .status { text-align: left; }
+    .status-row { justify-content: flex-start; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -332,111 +317,121 @@
 </head>
 <body>
 
-  <section class="now">
+  <header class="card head">
     <div class="clock">
       <span class="clock-hm" id="clockHM">--:--</span>
-      <span class="clock-sec" id="clockSec">--</span>
+      <span class="clock-sec" id="clockSec">:--</span>
       <span class="clock-mer" id="clockMer">--</span>
     </div>
-    <div class="today" id="today">&nbsp;</div>
+    <div class="head-date" id="today">&nbsp;</div>
 
-    <div class="now-rule"></div>
+    <div class="head-spacer"></div>
 
-    <div class="state">
-      <span class="lamp"></span>
-      <span class="state-label" id="stateLabel">&nbsp;</span>
+    <div class="status">
+      <div class="status-row">
+        <span class="lamp"></span>
+        <span class="status-label" id="stateLabel">&nbsp;</span>
+      </div>
+      <div class="status-sub" id="flip">&nbsp;</div>
     </div>
-    <div class="flip">
-      <div class="flip-lead" id="flipLead">&nbsp;</div>
-      <div class="flip-when" id="flipWhen">&nbsp;</div>
-    </div>
+  </header>
 
-    <div class="shift">
-      <div class="shift-track"><div class="shift-fill" id="shiftFill"></div></div>
-      <div class="shift-ends"><span>8:30 am</span><span>4:30 pm</span></div>
+  <section class="card track-card track-24">
+    <div class="track-head">
+      <span class="track-name">Next 24 hours</span>
+      <span class="track-note" id="note24">&nbsp;</span>
     </div>
-
-    <div class="week">
-      <div class="week-days" id="weekDays"></div>
-      <div class="week-note" id="weekNote">&nbsp;</div>
+    <div class="rail" id="rail24"></div>
+    <div class="band">
+      <div class="layer" id="segs24"></div>
+      <div class="layer" id="grid24"></div>
+      <div class="layer" id="rules24"></div>
+      <div class="nowmark"></div>
+      <div class="cells" id="cells24" style="grid-template-columns:repeat(24,1fr)"></div>
     </div>
+    <div class="axis axis-24" id="axis24"></div>
   </section>
 
-  <section class="run">
-    <div class="layer bands" id="bands"></div>
-    <div class="layer ticks" id="ticks"></div>
-    <div class="layer edges" id="edges"></div>
+  <section class="card strip">
+    <span class="strip-name">Next 7 days</span>
+    <div class="strip-body">
+      <div class="strip-band">
+        <div class="layer" id="segs7"></div>
+        <div class="layer" id="rules7"></div>
+        <div class="nowmark"></div>
+        <div class="cells" id="cells7"></div>
+      </div>
+      <div class="strip-axis" id="axis7"></div>
+    </div>
+    <span class="strip-note" id="note7">&nbsp;</span>
   </section>
 
 <script>
 (function () {
   "use strict";
 
-  var HOURS = 24;
-  var MS_H  = 3600000;
-  var START = { h: 8,  m: 30 };   // on the floor
-  var END   = { h: 16, m: 30 };   // off the floor
+  var MS_H = 3600000;
+  var H24 = 24, H7 = 24 * 7;
+  var START = { h: 8, m: 30 };
+  var END   = { h: 16, m: 30 };
 
   /* ---------------------------------------------------------- calendar */
 
-  function nthWeekday(year, month, weekday, n) {      // n-th weekday of month
-    var d = new Date(year, month, 1);
-    var offset = (weekday - d.getDay() + 7) % 7;
-    return new Date(year, month, 1 + offset + (n - 1) * 7);
+  function nthWeekday(y, m, wd, n) {
+    var d = new Date(y, m, 1);
+    var off = (wd - d.getDay() + 7) % 7;
+    return new Date(y, m, 1 + off + (n - 1) * 7);
   }
-  function lastWeekday(year, month, weekday) {
-    var d = new Date(year, month + 1, 0);
-    while (d.getDay() !== weekday) d.setDate(d.getDate() - 1);
+  function lastWeekday(y, m, wd) {
+    var d = new Date(y, m + 1, 0);
+    while (d.getDay() !== wd) d.setDate(d.getDate() - 1);
     return d;
   }
   function key(d) { return d.getMonth() + "-" + d.getDate(); }
 
-  var holidayCache = {};
-  function holidays(year) {
-    if (holidayCache[year]) return holidayCache[year];
-    var thanksgiving = nthWeekday(year, 10, 4, 4);          // 4th Thu, Nov
-    var dayAfter = new Date(thanksgiving);
-    dayAfter.setDate(dayAfter.getDate() + 1);
-    var set = {};
-    [
-      new Date(year, 0, 1),               // New Year's Day
-      lastWeekday(year, 4, 1),            // Memorial Day
-      new Date(year, 6, 4),               // Independence Day
-      nthWeekday(year, 8, 1, 1),          // Labor Day
-      thanksgiving,
-      dayAfter,
-      new Date(year, 11, 24),             // Christmas Eve
-      new Date(year, 11, 25)              // Christmas Day
-    ].forEach(function (d) { set[key(d)] = true; });
-    holidayCache[year] = set;
-    return set;
+  var holCache = {};
+  function holidaySet(y) {
+    if (!holCache[y]) {
+      var tg = nthWeekday(y, 10, 4, 4);
+      var after = new Date(tg);
+      after.setDate(after.getDate() + 1);
+      var s = {};
+      [
+        [new Date(y, 0, 1),      "New Year's Day"],
+        [lastWeekday(y, 4, 1),   "Memorial Day"],
+        [new Date(y, 6, 4),      "July 4th"],
+        [nthWeekday(y, 8, 1, 1), "Labor Day"],
+        [tg,                     "Thanksgiving"],
+        [after,                  "Day after Thanksgiving"],
+        [new Date(y, 11, 24),    "Christmas Eve"],
+        [new Date(y, 11, 25),    "Christmas Day"]
+      ].forEach(function (p) { s[key(p[0])] = p[1]; });
+      holCache[y] = s;
+    }
+    return holCache[y];
   }
+  function holidayName(d) { return holidaySet(d.getFullYear())[key(d)] || null; }
 
   function isWorkday(d) {
-    var day = d.getDay();
-    if (day === 0 || day === 6) return false;
-    return !holidays(d.getFullYear())[key(d)];
+    var g = d.getDay();
+    return g !== 0 && g !== 6 && !holidayName(d);
   }
-
   function at(d, t) {
     var x = new Date(d);
     x.setHours(t.h, t.m, 0, 0);
     return x;
   }
-
   function isOn(d) {
     return isWorkday(d) && d >= at(d, START) && d < at(d, END);
   }
-
-  /* next moment the state flips, searching forward day by day */
   function nextFlip(from) {
     if (isOn(from)) return { at: at(from, END), to: false };
-    var probe = new Date(from);
+    var p = new Date(from);
     for (var i = 0; i < 400; i++) {
-      var open = at(probe, START);
-      if (isWorkday(probe) && open > from) return { at: open, to: true };
-      probe.setDate(probe.getDate() + 1);
-      probe.setHours(0, 0, 0, 0);
+      var open = at(p, START);
+      if (isWorkday(p) && open > from) return { at: open, to: true };
+      p.setDate(p.getDate() + 1);
+      p.setHours(0, 0, 0, 0);
     }
     return { at: new Date(from.getTime() + MS_H * 24), to: true };
   }
@@ -446,6 +441,11 @@
   function hm(d) {
     return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).toLowerCase();
   }
+  function clockOnly(d) {
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+            .replace(/\s?(AM|PM|am|pm)$/i, "");
+  }
+  function mer(d) { return d.getHours() < 12 ? "am" : "pm"; }
   function dur(ms) {
     var mins = Math.max(0, Math.round(ms / 60000));
     var h = Math.floor(mins / 60), m = mins % 60;
@@ -455,206 +455,241 @@
     }
     return h ? h + "h " + m + "m" : m + "m";
   }
-  function dayName(d) {
-    return d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+  function shortDay(d) {
+    return d.toLocaleDateString([], { weekday: "short" }) + " " + d.getDate();
   }
 
-  /* --------------------------------------------------- build the scale */
+  /* ---------------------------------------------- hour grid + hour axis */
 
-  var ticksEl = document.getElementById("ticks");
-  var rows = [];
-  for (var i = 1; i <= HOURS; i++) {
-    var row = document.createElement("div");
-    row.className = "tick" + (i % 6 === 0 ? " quarter" : "");
-    row.innerHTML =
-      '<span class="tick-offset">+' + i + (i === 1 ? " hr" : " hrs") + '</span>' +
-      '<span class="tick-time"></span>';
-    ticksEl.appendChild(row);
-    rows.push({ el: row, time: row.querySelector(".tick-time"), h: i });
+  var grid = "";
+  for (var g = 1; g < H24; g++) {
+    grid += '<div class="gridline' + (g % 6 === 0 ? " quarter" : "") +
+            '" style="left:' + (g / H24 * 100) + '%"></div>';
+  }
+  document.getElementById("grid24").innerHTML = grid;
+
+  var axis24 = document.getElementById("axis24");
+  var cells24 = document.getElementById("cells24");
+  var axes = [];
+
+  var nowAx = document.createElement("div");
+  nowAx.className = "ax ax-now edge-first";
+  nowAx.style.left = "0%";
+  nowAx.innerHTML = '<div class="ax-n">now</div><div class="ax-t"></div><div class="ax-m"></div>';
+  axis24.appendChild(nowAx);
+  var nowAxT = nowAx.querySelector(".ax-t");
+  var nowAxM = nowAx.querySelector(".ax-m");
+
+  for (var i = 1; i <= H24; i++) {
+    var ax = document.createElement("div");
+    ax.className = "ax" + (i === H24 ? " edge-last" : "");
+    ax.style.left = (i / H24 * 100) + "%";
+    if (i % 2 === 1) ax.setAttribute("data-skip2", "1");
+    if (i % 3 !== 0) ax.setAttribute("data-skip3", "1");
+    ax.innerHTML = '<div class="ax-n">+' + i + '</div>' +
+                   '<div class="ax-t"></div><div class="ax-m"></div>';
+    axis24.appendChild(ax);
+
+    var cell = document.createElement("div");
+    cell.className = "cell";
+    cells24.appendChild(cell);
+
+    var rec = { el: ax, t: ax.querySelector(".ax-t"), m: ax.querySelector(".ax-m"), h: i };
+    axes.push(rec);
+    (function (r) {
+      cell.addEventListener("mouseenter", function () { r.el.classList.add("lit"); });
+      cell.addEventListener("mouseleave", function () { r.el.classList.remove("lit"); });
+    })(rec);
   }
 
-  var bandsEl = document.getElementById("bands");
-  var edgesEl = document.getElementById("edges");
+  /* ------------------------------------------------------ band painting */
 
-  function pct(ms) { return (ms / (HOURS * MS_H)) * 100; }
-
-  function paintWindow(now) {
-    var end = new Date(now.getTime() + HOURS * MS_H);
-    var bands = "";
-    var edges = "";
-
-    /* contiguous on/off segments across the next 24 hours */
-    var cursor = new Date(now);
-    var guard = 0;
-    while (cursor < end && guard++ < 200) {
+  function segmentsFor(now, spanH) {
+    var end = new Date(now.getTime() + spanH * MS_H);
+    var out = [];
+    var cursor = new Date(now), guard = 0;
+    while (cursor < end && guard++ < 400) {
       var state = isOn(cursor);
       var flip = nextFlip(cursor);
       var stop = flip.at < end ? flip.at : end;
-
-      var top = pct(cursor - now);
-      var height = pct(stop - cursor);
-      bands += '<div class="band ' + (state ? "on" : "off") + '" style="top:' +
-               top.toFixed(4) + '%;height:' + height.toFixed(4) + '%"></div>';
-
-      if (flip.at < end) {
-        edges += '<div class="edge ' + (flip.to ? "to-on" : "to-off") + '" style="top:' +
-                 pct(flip.at - now).toFixed(4) + '%">' +
-                 '<div class="edge-tag"><span>' +
-                 (flip.to ? "At work" : "Not at work") + " " + hm(flip.at) +
-                 '</span></div></div>';
-      }
-
+      out.push({ from: new Date(cursor), to: stop, on: state, flip: flip.at < end ? flip : null });
       cursor = new Date(stop.getTime() + 1000);
     }
+    return out;
+  }
 
-    /* midnight rules, labelled with the day they open */
+  function paint24(now) {
+    var spanMs = H24 * MS_H;
+    var end = new Date(now.getTime() + spanMs);
+    function pct(ms) { return (ms / spanMs) * 100; }
+
+    var segs = "", rules = "", tags = "";
+    segmentsFor(now, H24).forEach(function (s) {
+      segs += '<div class="seg ' + (s.on ? "on" : "off") + '" style="left:' +
+              pct(s.from - now).toFixed(4) + '%;width:' + pct(s.to - s.from).toFixed(4) + '%"></div>';
+      if (s.flip) {
+        var p = pct(s.flip.at - now), cls = s.flip.to ? "on" : "off";
+        rules += '<div class="rule ' + cls + '" style="left:' + p.toFixed(4) + '%"></div>';
+        tags  += '<div class="tag ' + cls + '" style="left:' + p.toFixed(4) + '%">' +
+                 (s.flip.to ? "At work" : "Not at work") + " " + hm(s.flip.at) + '</div>';
+      }
+    });
+
     var mid = new Date(now);
     mid.setHours(24, 0, 0, 0);
     while (mid < end) {
-      edges += '<div class="edge midnight" style="top:' + pct(mid - now).toFixed(4) + '%">' +
-               '<div class="edge-tag"><span>' + dayName(mid) + '</span></div></div>';
+      var mp = pct(mid - now);
+      rules += '<div class="rule day" style="left:' + mp.toFixed(4) + '%"></div>';
+      tags  += '<div class="tag day" style="left:' + mp.toFixed(4) + '%">' + shortDay(mid) + '</div>';
       mid = new Date(mid.getTime() + 24 * MS_H);
     }
 
-    bandsEl.innerHTML = bands;
-    edgesEl.innerHTML = edges;
+    document.getElementById("segs24").innerHTML  = segs;
+    document.getElementById("rules24").innerHTML = rules;
+    document.getElementById("rail24").innerHTML  = tags;
+
+    /* how much staffed time is left in the next 24h */
+    var onMs = 0;
+    segmentsFor(now, H24).forEach(function (s) { if (s.on) onMs += s.to - s.from; });
+    document.getElementById("note24").textContent =
+      dur(onMs) + " of staffed time in this window";
   }
 
-  /* ----------------------------------------------------------- render */
+  var axis7 = document.getElementById("axis7"), cells7 = document.getElementById("cells7");
+  var lastDayKey = "";
 
-  var lastPaint = "";
+  function paint7(now) {
+    var spanMs = H7 * MS_H;
+    var end = new Date(now.getTime() + spanMs);
+    function pct(ms) { return (ms / spanMs) * 100; }
+
+    var segs = "", rules = "";
+    segmentsFor(now, H7).forEach(function (s) {
+      segs += '<div class="seg ' + (s.on ? "on" : "off") + '" style="left:' +
+              pct(s.from - now).toFixed(4) + '%;width:' + pct(s.to - s.from).toFixed(4) + '%"></div>';
+    });
+
+    /* day blocks: boundaries, centred labels, hover cells */
+    var blocks = [];
+    var cursor = new Date(now);
+    while (cursor < end) {
+      var nextMid = new Date(cursor);
+      nextMid.setHours(24, 0, 0, 0);
+      var stop = nextMid < end ? nextMid : end;
+      blocks.push({ from: new Date(cursor), to: stop });
+      cursor = stop;
+    }
+
+    var axHtml = "", colTemplate = [];
+    blocks.forEach(function (b, idx) {
+      if (idx > 0) {
+        rules += '<div class="rule day" style="left:' + pct(b.from - now).toFixed(4) + '%"></div>';
+      }
+      var mid = new Date((b.from.getTime() + b.to.getTime()) / 2);
+      var probe = new Date(b.from);
+      probe.setHours(12, 0, 0, 0);
+      var open = isWorkday(probe);
+      var centre = pct(mid - now);
+      var clamp = centre < 3 ? " edge-first" : (centre > 97 ? " edge-last" : "");
+
+      axHtml += '<div class="dx' + (open ? " open" : "") + clamp + '" style="left:' +
+                centre.toFixed(4) + '%">' +
+                '<div class="dx-d">' + (idx === 0 ? "Today" : shortDay(probe)) + '</div></div>';
+
+      colTemplate.push(((b.to - b.from) / spanMs * 100).toFixed(4) + "%");
+    });
+
+    document.getElementById("segs7").innerHTML  = segs;
+    document.getElementById("rules7").innerHTML = rules;
+    axis7.innerHTML = axHtml;
+
+    cells7.style.gridTemplateColumns = colTemplate.join(" ");
+    cells7.innerHTML = "";
+    var dxs = axis7.querySelectorAll(".dx");
+    blocks.forEach(function (b, idx) {
+      var c = document.createElement("div");
+      c.className = "cell";
+      cells7.appendChild(c);
+      var target = dxs[idx];
+      c.addEventListener("mouseenter", function () { target.classList.add("lit"); });
+      c.addEventListener("mouseleave", function () { target.classList.remove("lit"); });
+    });
+
+    /* name the next closed day */
+    var note = "";
+    for (var i = 1; i <= 7 && !note; i++) {
+      var d = new Date(now);
+      d.setDate(d.getDate() + i);
+      d.setHours(12, 0, 0, 0);
+      if (!isWorkday(d)) {
+        var h = holidayName(d);
+        var dow = d.toLocaleDateString([], { weekday: "long" });
+        note = h
+          ? (i === 1 ? "Tomorrow" : dow) + " is " + h + ", nobody on the floor"
+          : "Closed " + (i === 1 ? "tomorrow" : dow) + ", nobody to pull parts";
+      }
+    }
+    document.getElementById("note7").textContent = note || "Staffed every day this week";
+  }
+
+  /* -------------------------------------------------- tab icon + title */
+
+  function iconFor(on) {
+    var tile = on ? "#15A54A" : "#5E7183";
+    return "data:image/svg+xml," + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
+        '<rect width="64" height="64" rx="15" fill="' + tile + '"/>' +
+        '<circle cx="32" cy="32" r="19.5" fill="none" stroke="#0E1A14" stroke-width="5.5"/>' +
+        '<path d="M32 32 V19.5" stroke="#0E1A14" stroke-width="6" stroke-linecap="round"/>' +
+        '<path d="M32 32 L41.5 38.5" stroke="#0E1A14" stroke-width="6" stroke-linecap="round"/>' +
+      '</svg>');
+  }
+  var iconEl = document.getElementById("favicon"), lastIcon = null;
+
+  /* ------------------------------------------------------------ render */
+
+  var lastMin = "";
 
   function render() {
     var now = new Date();
 
-    var parts = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" });
-    var bits = parts.replace(/\s?(AM|PM|am|pm)$/, "").split(":");
-    document.getElementById("clockHM").textContent  = bits[0] + ":" + bits[1];
-    document.getElementById("clockSec").textContent = ":" + bits[2];
-    document.getElementById("clockMer").textContent =
-      now.getHours() < 12 ? "am" : "pm";
+    document.getElementById("clockHM").textContent  = clockOnly(now);
+    document.getElementById("clockSec").textContent =
+      ":" + String(now.getSeconds()).padStart(2, "0");
+    document.getElementById("clockMer").textContent = mer(now);
     document.getElementById("today").textContent =
       now.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
 
     var on = isOn(now);
     document.body.classList.toggle("is-on", on);
     document.getElementById("stateLabel").textContent = on ? "At work" : "Not at work";
-    setTab(now, on);
 
     var flip = nextFlip(now);
     var sameDay = flip.at.toDateString() === now.toDateString();
-    document.getElementById("flipLead").innerHTML =
-      (flip.to ? "At work" : "Not at work") + " in <strong>" + dur(flip.at - now) + "</strong>";
-    document.getElementById("flipWhen").textContent =
-      hm(flip.at) + (sameDay ? " today" : " " + dayName(flip.at));
+    document.getElementById("flip").innerHTML =
+      (flip.to ? "At work" : "Not at work") + " in <strong>" + dur(flip.at - now) +
+      "</strong>, at " + hm(flip.at) + (sameDay ? " today" : " " + shortDay(flip.at));
 
-    var open = at(now, START), close = at(now, END);
-    var progress = on ? ((now - open) / (close - open)) * 100 : 0;
-    document.getElementById("shiftFill").style.width = progress.toFixed(2) + "%";
+    if (lastIcon !== on) { iconEl.href = iconFor(on); lastIcon = on; }
+    document.title = hm(now) + " \u2014 " + (on ? "At work" : "Not at work");
 
-    rows.forEach(function (r) {
-      var future = new Date(now.getTime() + r.h * MS_H);
-      r.time.textContent = hm(future);
-      r.el.classList.toggle("on", isOn(future));
+    nowAxT.textContent = clockOnly(now);
+    nowAxM.textContent = mer(now);
+    nowAx.classList.toggle("open", on);
+
+    axes.forEach(function (a) {
+      var f = new Date(now.getTime() + a.h * MS_H);
+      a.t.textContent = clockOnly(f);
+      a.m.textContent = mer(f);
+      a.el.classList.toggle("open", isOn(f));
     });
 
-    /* repaint bands only when the minute turns */
-    var stamp = now.getHours() + ":" + now.getMinutes();
-    if (stamp !== lastPaint) {
-      paintWindow(now);
-      lastPaint = stamp;
-    }
+    var minKey = now.getHours() + ":" + now.getMinutes();
+    if (minKey !== lastMin) { paint24(now); lastMin = minKey; }
 
-    /* redraw the week strip only when the date turns */
-    var dayKey = now.toDateString();
-    if (dayKey !== lastWeekKey) {
-      drawWeek(now);
-      lastWeekKey = dayKey;
-    }
+    var dk = now.toDateString();
+    if (dk !== lastDayKey) { paint7(now); lastDayKey = dk; }
   }
-
-  /* ------------------------------------------------ tab icon + title */
-
-  function iconFor(on) {
-    var tile = on ? "#15A54A" : "#5E7183";
-    var svg =
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
-        '<rect width="64" height="64" rx="15" fill="' + tile + '"/>' +
-        '<circle cx="32" cy="32" r="19.5" fill="none" stroke="#0E1A14" stroke-width="5.5"/>' +
-        '<path d="M32 32 V19.5" stroke="#0E1A14" stroke-width="6" stroke-linecap="round"/>' +
-        '<path d="M32 32 L41.5 38.5" stroke="#0E1A14" stroke-width="6" stroke-linecap="round"/>' +
-      '</svg>';
-    return "data:image/svg+xml," + encodeURIComponent(svg);
-  }
-
-  var iconEl = document.getElementById("favicon");
-  var lastIcon = null;
-
-  function setTab(now, on) {
-    if (lastIcon !== on) {
-      iconEl.href = iconFor(on);
-      lastIcon = on;
-    }
-    document.title = hm(now) + " \u2014 " + (on ? "At work" : "Not at work");
-  }
-
-  /* ------------------------------------------------- 7-day work strip */
-
-  function holidayName(d) {
-    var y = d.getFullYear(), k = key(d);
-    var thanksgiving = nthWeekday(y, 10, 4, 4);
-    var dayAfter = new Date(thanksgiving);
-    dayAfter.setDate(dayAfter.getDate() + 1);
-    var named = [
-      [new Date(y, 0, 1),        "New Year's Day"],
-      [lastWeekday(y, 4, 1),     "Memorial Day"],
-      [new Date(y, 6, 4),        "July 4th"],
-      [nthWeekday(y, 8, 1, 1),   "Labor Day"],
-      [thanksgiving,             "Thanksgiving"],
-      [dayAfter,                 "the day after Thanksgiving"],
-      [new Date(y, 11, 24),      "Christmas Eve"],
-      [new Date(y, 11, 25),      "Christmas Day"]
-    ];
-    for (var i = 0; i < named.length; i++) {
-      if (key(named[i][0]) === k) return named[i][1];
-    }
-    return null;
-  }
-
-  function drawWeek(now) {
-    var host = document.getElementById("weekDays");
-    var html = "";
-    var closedNote = "";
-
-    for (var i = 0; i < 7; i++) {
-      var d = new Date(now);
-      d.setDate(d.getDate() + i);
-      d.setHours(12, 0, 0, 0);
-      var open = isWorkday(d);
-
-      html += '<div class="day' + (open ? " open" : "") + (i === 0 ? " today" : "") + '">' +
-              '<div class="day-dow">' + d.toLocaleDateString([], { weekday: "narrow" }) + '</div>' +
-              '<div class="day-num">' + d.getDate() + '</div></div>';
-
-      if (!open && !closedNote && i > 0) {
-        var hol = holidayName(d);
-        var dow = d.toLocaleDateString([], { weekday: "long" });
-        if (hol) {
-          closedNote = (i === 1 ? "Tomorrow" : dow) + " is " + hol + ", nobody on the floor.";
-        } else {
-          closedNote = i === 1
-            ? "Closed tomorrow, nobody to pull parts."
-            : "Closed " + dow + ", nobody to pull parts.";
-        }
-      }
-    }
-
-    host.innerHTML = html;
-    document.getElementById("weekNote").textContent =
-      closedNote || "Staffed every day this week.";
-  }
-
-  var lastWeekKey = "";
 
   render();
   setInterval(render, 1000);
