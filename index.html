@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Next 24 hours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:   #E6E9E4;
+    --panel:   #FBFCFA;
+    --ink:     #17211D;
+    --muted:   #6E7A73;
+    --hair:    #D3D8D1;
+    --on:      #0F8B4C;
+    --on-tint: #E4F1E7;
+    --off:     #47566B;
+    --off-tint:#EDEFF2;
+
+    --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --font-data: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --rule-gap: linear-gradient(
+      to right,
+      #000 0 calc(50% - 105px),
+      transparent calc(50% - 105px) calc(50% + 105px),
+      #000 calc(50% + 105px) 100%
+    );
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    display: flex;
+    gap: 18px;
+    height: 100vh;
+    padding: 18px;
+  }
+
+  /* ------------------------------------------------ left: clock + status */
+
+  .now {
+    flex: 0 0 clamp(290px, 22%, 400px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--panel);
+    border: 1px solid var(--hair);
+    border-radius: 4px;
+    padding: clamp(20px, 3vh, 38px);
+  }
+
+  .clock {
+    display: flex;
+    align-items: baseline;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 0.88;
+  }
+  .clock-hm { font-size: clamp(54px, 7.6vw, 104px); }
+  .clock-sec {
+    font-family: var(--font-data);
+    font-size: clamp(15px, 1.5vw, 21px);
+    font-weight: 400;
+    color: var(--muted);
+  }
+  .clock-mer {
+    font-size: clamp(19px, 2vw, 28px);
+    font-weight: 600;
+    color: var(--ink);
+    margin-left: 0.1em;
+  }
+
+  .today {
+    margin-top: 14px;
+    font-size: clamp(14px, 1.2vw, 18px);
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .now-rule {
+    height: 1px;
+    background: var(--hair);
+    margin: clamp(24px, 4.5vh, 46px) 0 clamp(20px, 3.5vh, 34px);
+  }
+
+  .state {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .lamp {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    flex: none;
+    background: var(--off);
+    box-shadow: 0 0 0 4px var(--off-tint);
+  }
+  body.is-on .lamp {
+    background: var(--on);
+    box-shadow: 0 0 0 4px var(--on-tint);
+  }
+  .state-label {
+    font-size: clamp(22px, 2.4vw, 32px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .flip {
+    margin-top: 12px;
+    font-size: clamp(13px, 1.15vw, 17px);
+    line-height: 1.45;
+    color: var(--muted);
+  }
+  .flip-lead strong {
+    font-weight: 600;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .flip-when {
+    margin-top: 2px;
+    font-family: var(--font-data);
+    font-size: clamp(11.5px, 0.95vw, 14px);
+  }
+
+  .shift {
+    margin-top: clamp(18px, 3vh, 30px);
+  }
+  .shift-track {
+    position: relative;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--off-tint);
+    overflow: hidden;
+  }
+  .shift-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0;
+    background: var(--on);
+    border-radius: 999px;
+  }
+  .shift-ends {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-family: var(--font-data);
+    font-size: clamp(11px, 0.85vw, 13px);
+    color: var(--muted);
+  }
+
+  .week {
+    margin-top: clamp(26px, 4.5vh, 44px);
+    padding-top: clamp(18px, 3vh, 28px);
+    border-top: 1px solid var(--hair);
+  }
+  .week-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+  .day {
+    border-radius: 3px;
+    padding: 7px 0 8px;
+    text-align: center;
+    background: var(--off-tint);
+    background-image: repeating-linear-gradient(
+      -45deg,
+      rgba(71, 86, 107, 0.13) 0 1px,
+      transparent 1px 6px
+    );
+  }
+  .day.open {
+    background: var(--on-tint);
+    background-image: none;
+  }
+  .day.today { box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .day-dow {
+    font-family: var(--font-data);
+    font-size: clamp(9.5px, 0.72vw, 11px);
+    color: var(--muted);
+  }
+  .day-num {
+    margin-top: 2px;
+    font-family: var(--font-data);
+    font-size: clamp(12px, 0.95vw, 14.5px);
+    font-weight: 600;
+    color: var(--off);
+  }
+  .day.open .day-num { color: var(--on); }
+  .week-note {
+    margin-top: 10px;
+    font-size: clamp(11.5px, 0.92vw, 13.5px);
+    color: var(--muted);
+  }
+
+  /* --------------------------------------------- right: 24-hour scale */
+
+  .run {
+    flex: 1;
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--hair);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .layer { position: absolute; inset: 0; }
+  .bands, .edges { pointer-events: none; }
+
+  .band { position: absolute; left: 0; right: 0; }
+  .band.on { background: var(--on-tint); }
+  .band.off {
+    background:
+      repeating-linear-gradient(
+        -45deg,
+        rgba(71, 86, 107, 0.11) 0 1px,
+        transparent 1px 7px
+      ),
+      var(--off-tint);
+  }
+
+  .ticks {
+    display: grid;
+    grid-template-rows: repeat(24, 1fr);
+  }
+
+  .tick {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    border-top: 1px solid rgba(23, 33, 29, 0.07);
+    transition: background-color 140ms ease;
+  }
+  .tick:first-child { border-top: 0; }
+  .tick.quarter { border-top-color: rgba(23, 33, 29, 0.2); }
+
+  .tick-offset {
+    min-width: 5.2em;
+    text-align: right;
+    font-family: var(--font-data);
+    font-size: clamp(11px, 1.45vh, 15px);
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .tick-time {
+    min-width: 5.6em;
+    text-align: left;
+    font-family: var(--font-data);
+    font-size: clamp(13px, 1.85vh, 19px);
+    font-weight: 600;
+    color: var(--off);
+  }
+  .tick.on .tick-time { color: var(--on); }
+
+  .tick:hover { background: rgba(23, 33, 29, 0.055); }
+  .tick:hover .tick-offset { color: var(--ink); }
+
+  /* boundary + day-break rules */
+
+  .edge { position: absolute; left: 0; right: 0; height: 0; }
+  .edge::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    border-top: 1px solid currentColor;
+    /* open a gap so the rule never strikes through the centred readout */
+    -webkit-mask-image: var(--rule-gap);
+    mask-image: var(--rule-gap);
+  }
+  .edge-tag {
+    position: absolute;
+    top: 0;
+    transform: translateY(-50%);
+    padding: 3px 9px;
+    border-radius: 3px;
+    background: currentColor;
+    font-family: var(--font-data);
+    font-size: clamp(10px, 1.15vh, 12.5px);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .edge-tag span { color: var(--panel); }
+
+  .edge.to-on    { color: var(--on); }
+  .edge.to-off   { color: var(--off); }
+  .edge.to-on .edge-tag,
+  .edge.to-off .edge-tag { right: 22px; }
+
+  .edge.midnight { color: var(--ink); }
+  .edge.midnight::before { border-top-style: dashed; }
+  .edge.midnight .edge-tag { left: 22px; background: var(--ink); }
+
+  @media (max-width: 760px) {
+    body { flex-direction: column; gap: 12px; padding: 12px; }
+    .now { flex: 0 0 auto; padding: 18px; }
+    .now-rule { margin: 18px 0 16px; }
+    .week { margin-top: 20px; padding-top: 16px; }
+    .run { min-height: 0; }
+    :root {
+      --rule-gap: linear-gradient(
+        to right,
+        #000 0 calc(50% - 82px),
+        transparent calc(50% - 82px) calc(50% + 82px),
+        #000 calc(50% + 82px) 100%
+      );
+    }
+    .edge.to-on .edge-tag, .edge.to-off .edge-tag { right: 10px; }
+    .edge.midnight .edge-tag { left: 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <section class="now">
+    <div class="clock">
+      <span class="clock-hm" id="clockHM">--:--</span>
+      <span class="clock-sec" id="clockSec">--</span>
+      <span class="clock-mer" id="clockMer">--</span>
+    </div>
+    <div class="today" id="today">&nbsp;</div>
+
+    <div class="now-rule"></div>
+
+    <div class="state">
+      <span class="lamp"></span>
+      <span class="state-label" id="stateLabel">&nbsp;</span>
+    </div>
+    <div class="flip">
+      <div class="flip-lead" id="flipLead">&nbsp;</div>
+      <div class="flip-when" id="flipWhen">&nbsp;</div>
+    </div>
+
+    <div class="shift">
+      <div class="shift-track"><div class="shift-fill" id="shiftFill"></div></div>
+      <div class="shift-ends"><span>8:30 am</span><span>4:30 pm</span></div>
+    </div>
+
+    <div class="week">
+      <div class="week-days" id="weekDays"></div>
+      <div class="week-note" id="weekNote">&nbsp;</div>
+    </div>
+  </section>
+
+  <section class="run">
+    <div class="layer bands" id="bands"></div>
+    <div class="layer ticks" id="ticks"></div>
+    <div class="layer edges" id="edges"></div>
+  </section>
+
+<script>
+(function () {
+  "use strict";
+
+  var HOURS = 24;
+  var MS_H  = 3600000;
+  var START = { h: 8,  m: 30 };   // on the floor
+  var END   = { h: 16, m: 30 };   // off the floor
+
+  /* ---------------------------------------------------------- calendar */
+
+  function nthWeekday(year, month, weekday, n) {      // n-th weekday of month
+    var d = new Date(year, month, 1);
+    var offset = (weekday - d.getDay() + 7) % 7;
+    return new Date(year, month, 1 + offset + (n - 1) * 7);
+  }
+  function lastWeekday(year, month, weekday) {
+    var d = new Date(year, month + 1, 0);
+    while (d.getDay() !== weekday) d.setDate(d.getDate() - 1);
+    return d;
+  }
+  function key(d) { return d.getMonth() + "-" + d.getDate(); }
+
+  var holidayCache = {};
+  function holidays(year) {
+    if (holidayCache[year]) return holidayCache[year];
+    var thanksgiving = nthWeekday(year, 10, 4, 4);          // 4th Thu, Nov
+    var dayAfter = new Date(thanksgiving);
+    dayAfter.setDate(dayAfter.getDate() + 1);
+    var set = {};
+    [
+      new Date(year, 0, 1),               // New Year's Day
+      lastWeekday(year, 4, 1),            // Memorial Day
+      new Date(year, 6, 4),               // Independence Day
+      nthWeekday(year, 8, 1, 1),          // Labor Day
+      thanksgiving,
+      dayAfter,
+      new Date(year, 11, 24),             // Christmas Eve
+      new Date(year, 11, 25)              // Christmas Day
+    ].forEach(function (d) { set[key(d)] = true; });
+    holidayCache[year] = set;
+    return set;
+  }
+
+  function isWorkday(d) {
+    var day = d.getDay();
+    if (day === 0 || day === 6) return false;
+    return !holidays(d.getFullYear())[key(d)];
+  }
+
+  function at(d, t) {
+    var x = new Date(d);
+    x.setHours(t.h, t.m, 0, 0);
+    return x;
+  }
+
+  function isOn(d) {
+    return isWorkday(d) && d >= at(d, START) && d < at(d, END);
+  }
+
+  /* next moment the state flips, searching forward day by day */
+  function nextFlip(from) {
+    if (isOn(from)) return { at: at(from, END), to: false };
+    var probe = new Date(from);
+    for (var i = 0; i < 400; i++) {
+      var open = at(probe, START);
+      if (isWorkday(probe) && open > from) return { at: open, to: true };
+      probe.setDate(probe.getDate() + 1);
+      probe.setHours(0, 0, 0, 0);
+    }
+    return { at: new Date(from.getTime() + MS_H * 24), to: true };
+  }
+
+  /* ------------------------------------------------------- formatting */
+
+  function hm(d) {
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).toLowerCase();
+  }
+  function dur(ms) {
+    var mins = Math.max(0, Math.round(ms / 60000));
+    var h = Math.floor(mins / 60), m = mins % 60;
+    if (h >= 24) {
+      var days = Math.floor(h / 24);
+      return days + (days === 1 ? " day " : " days ") + (h % 24) + "h";
+    }
+    return h ? h + "h " + m + "m" : m + "m";
+  }
+  function dayName(d) {
+    return d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+  }
+
+  /* --------------------------------------------------- build the scale */
+
+  var ticksEl = document.getElementById("ticks");
+  var rows = [];
+  for (var i = 1; i <= HOURS; i++) {
+    var row = document.createElement("div");
+    row.className = "tick" + (i % 6 === 0 ? " quarter" : "");
+    row.innerHTML =
+      '<span class="tick-offset">+' + i + (i === 1 ? " hr" : " hrs") + '</span>' +
+      '<span class="tick-time"></span>';
+    ticksEl.appendChild(row);
+    rows.push({ el: row, time: row.querySelector(".tick-time"), h: i });
+  }
+
+  var bandsEl = document.getElementById("bands");
+  var edgesEl = document.getElementById("edges");
+
+  function pct(ms) { return (ms / (HOURS * MS_H)) * 100; }
+
+  function paintWindow(now) {
+    var end = new Date(now.getTime() + HOURS * MS_H);
+    var bands = "";
+    var edges = "";
+
+    /* contiguous on/off segments across the next 24 hours */
+    var cursor = new Date(now);
+    var guard = 0;
+    while (cursor < end && guard++ < 200) {
+      var state = isOn(cursor);
+      var flip = nextFlip(cursor);
+      var stop = flip.at < end ? flip.at : end;
+
+      var top = pct(cursor - now);
+      var height = pct(stop - cursor);
+      bands += '<div class="band ' + (state ? "on" : "off") + '" style="top:' +
+               top.toFixed(4) + '%;height:' + height.toFixed(4) + '%"></div>';
+
+      if (flip.at < end) {
+        edges += '<div class="edge ' + (flip.to ? "to-on" : "to-off") + '" style="top:' +
+                 pct(flip.at - now).toFixed(4) + '%">' +
+                 '<div class="edge-tag"><span>' +
+                 (flip.to ? "At work" : "Not at work") + " " + hm(flip.at) +
+                 '</span></div></div>';
+      }
+
+      cursor = new Date(stop.getTime() + 1000);
+    }
+
+    /* midnight rules, labelled with the day they open */
+    var mid = new Date(now);
+    mid.setHours(24, 0, 0, 0);
+    while (mid < end) {
+      edges += '<div class="edge midnight" style="top:' + pct(mid - now).toFixed(4) + '%">' +
+               '<div class="edge-tag"><span>' + dayName(mid) + '</span></div></div>';
+      mid = new Date(mid.getTime() + 24 * MS_H);
+    }
+
+    bandsEl.innerHTML = bands;
+    edgesEl.innerHTML = edges;
+  }
+
+  /* ----------------------------------------------------------- render */
+
+  var lastPaint = "";
+
+  function render() {
+    var now = new Date();
+
+    var parts = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" });
+    var bits = parts.replace(/\s?(AM|PM|am|pm)$/, "").split(":");
+    document.getElementById("clockHM").textContent  = bits[0] + ":" + bits[1];
+    document.getElementById("clockSec").textContent = ":" + bits[2];
+    document.getElementById("clockMer").textContent =
+      now.getHours() < 12 ? "am" : "pm";
+    document.getElementById("today").textContent =
+      now.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
+
+    var on = isOn(now);
+    document.body.classList.toggle("is-on", on);
+    document.getElementById("stateLabel").textContent = on ? "At work" : "Not at work";
+
+    var flip = nextFlip(now);
+    var sameDay = flip.at.toDateString() === now.toDateString();
+    document.getElementById("flipLead").innerHTML =
+      (flip.to ? "At work" : "Not at work") + " in <strong>" + dur(flip.at - now) + "</strong>";
+    document.getElementById("flipWhen").textContent =
+      hm(flip.at) + (sameDay ? " today" : " " + dayName(flip.at));
+
+    var open = at(now, START), close = at(now, END);
+    var progress = on ? ((now - open) / (close - open)) * 100 : 0;
+    document.getElementById("shiftFill").style.width = progress.toFixed(2) + "%";
+
+    rows.forEach(function (r) {
+      var future = new Date(now.getTime() + r.h * MS_H);
+      r.time.textContent = hm(future);
+      r.el.classList.toggle("on", isOn(future));
+    });
+
+    /* repaint bands only when the minute turns */
+    var stamp = now.getHours() + ":" + now.getMinutes();
+    if (stamp !== lastPaint) {
+      paintWindow(now);
+      lastPaint = stamp;
+    }
+
+    /* redraw the week strip only when the date turns */
+    var dayKey = now.toDateString();
+    if (dayKey !== lastWeekKey) {
+      drawWeek(now);
+      lastWeekKey = dayKey;
+    }
+  }
+
+  /* ------------------------------------------------- 7-day work strip */
+
+  function holidayName(d) {
+    var y = d.getFullYear(), k = key(d);
+    var thanksgiving = nthWeekday(y, 10, 4, 4);
+    var dayAfter = new Date(thanksgiving);
+    dayAfter.setDate(dayAfter.getDate() + 1);
+    var named = [
+      [new Date(y, 0, 1),        "New Year's Day"],
+      [lastWeekday(y, 4, 1),     "Memorial Day"],
+      [new Date(y, 6, 4),        "July 4th"],
+      [nthWeekday(y, 8, 1, 1),   "Labor Day"],
+      [thanksgiving,             "Thanksgiving"],
+      [dayAfter,                 "the day after Thanksgiving"],
+      [new Date(y, 11, 24),      "Christmas Eve"],
+      [new Date(y, 11, 25),      "Christmas Day"]
+    ];
+    for (var i = 0; i < named.length; i++) {
+      if (key(named[i][0]) === k) return named[i][1];
+    }
+    return null;
+  }
+
+  function drawWeek(now) {
+    var host = document.getElementById("weekDays");
+    var html = "";
+    var closedNote = "";
+
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(now);
+      d.setDate(d.getDate() + i);
+      d.setHours(12, 0, 0, 0);
+      var open = isWorkday(d);
+
+      html += '<div class="day' + (open ? " open" : "") + (i === 0 ? " today" : "") + '">' +
+              '<div class="day-dow">' + d.toLocaleDateString([], { weekday: "narrow" }) + '</div>' +
+              '<div class="day-num">' + d.getDate() + '</div></div>';
+
+      if (!open && !closedNote && i > 0) {
+        var hol = holidayName(d);
+        var dow = d.toLocaleDateString([], { weekday: "long" });
+        if (hol) {
+          closedNote = (i === 1 ? "Tomorrow" : dow) + " is " + hol + ", nobody on the floor.";
+        } else {
+          closedNote = i === 1
+            ? "Closed tomorrow, nobody to pull parts."
+            : "Closed " + dow + ", nobody to pull parts.";
+        }
+      }
+    }
+
+    host.innerHTML = html;
+    document.getElementById("weekNote").textContent =
+      closedNote || "Staffed every day this week.";
+  }
+
+  var lastWeekKey = "";
+
+  render();
+  setInterval(render, 1000);
+})();
+</script>
+
+</body>
+</html>
